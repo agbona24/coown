@@ -1,26 +1,136 @@
 @import "tailwindcss";
 
+@theme {
+  --color-teal: #53857A;
+  --color-teal-dark: #456e64;
+  --color-slate: #535D66;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --teal-green: #53857A;
+  --teal-dark: #456e64;
+  --slate-gray: #535D66;
+  --border-gray: #e5e7eb;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Form card styling */
+.form-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 28rem;
+}
+
+/* Form input styling */
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-gray);
+  border-radius: 0.5rem;
+  background-color: white;
+  color: var(--slate-gray);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--teal-green);
+  box-shadow: 0 0 0 3px rgba(83, 133, 122, 0.2);
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Form label */
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--slate-gray);
+  margin-bottom: 0.5rem;
+}
+
+/* Submit button */
+.btn-primary {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--teal-green);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+  background-color: var(--teal-dark);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Logo circles */
+.logo-circle {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid white;
+  border-radius: 50%;
+}
+
+/* Feature item */
+.feature-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* Success card */
+.success-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.success-icon {
+  width: 4rem;
+  height: 4rem;
+  background-color: var(--teal-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
 }
