@@ -217,6 +217,20 @@ export default function WaitlistForm() {
                 </div>
               </button>
             </div>
+
+            <div style={{ marginTop: '1.5rem' }}>
+              <button
+                type="button"
+                disabled
+                className="btn-primary"
+                style={{ opacity: 0.6 }}
+              >
+                Join the Waitlist
+              </button>
+              <p style={{ fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center', marginTop: '0.5rem' }}>
+                Select an option above to continue
+              </p>
+            </div>
           </div>
         )}
 
