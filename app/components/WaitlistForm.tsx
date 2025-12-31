@@ -27,7 +27,7 @@ const initialFormData: FormData = {
 };
 
 export default function WaitlistForm() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at 0 for initial button state
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -48,7 +48,7 @@ export default function WaitlistForm() {
   };
 
   const prevStep = () => {
-    if (step > 1) setStep(step - 1);
+    if (step > 0) setStep(step - 1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,31 +90,70 @@ export default function WaitlistForm() {
 
   return (
     <div className="form-card">
-      {/* Progress Bar */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Step {step} of {totalSteps}</span>
-          <span style={{ fontSize: '0.75rem', color: '#53857A', fontWeight: 500 }}>
-            {step === 1 ? 'Choose Path' : step === 2 ? 'Your Details' : 'Almost Done'}
-          </span>
+      {/* Progress Bar - only show after step 0 */}
+      {step > 0 && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Step {step} of {totalSteps}</span>
+            <span style={{ fontSize: '0.75rem', color: '#53857A', fontWeight: 500 }}>
+              {step === 1 ? 'Choose Path' : step === 2 ? 'Your Details' : 'Almost Done'}
+            </span>
+          </div>
+          <div style={{ height: '4px', background: '#e5e7eb', borderRadius: '2px', overflow: 'hidden' }}>
+            <div
+              style={{
+                height: '100%',
+                width: `${(step / totalSteps) * 100}%`,
+                background: 'linear-gradient(to right, #53857A, #456e64)',
+                borderRadius: '2px',
+                transition: 'width 0.3s ease'
+              }}
+            />
+          </div>
         </div>
-        <div style={{ height: '4px', background: '#e5e7eb', borderRadius: '2px', overflow: 'hidden' }}>
-          <div
-            style={{
-              height: '100%',
-              width: `${(step / totalSteps) * 100}%`,
-              background: 'linear-gradient(to right, #53857A, #456e64)',
-              borderRadius: '2px',
-              transition: 'width 0.3s ease'
-            }}
-          />
-        </div>
-      </div>
+      )}
 
       <form onSubmit={handleSubmit}>
+        {/* Step 0: Initial Join Button */}
+        {step === 0 && (
+          <div style={{ animation: 'fadeIn 0.3s ease', textAlign: 'center' }}>
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="btn-primary"
+              style={{
+                padding: '1rem 2.5rem',
+                fontSize: '1.125rem'
+              }}
+            >
+              Join the Waitlist
+            </button>
+          </div>
+        )}
+
         {/* Step 1: Choose User Type */}
         {step === 1 && (
           <div style={{ animation: 'slideIn 0.3s ease' }}>
+            <button
+              type="button"
+              onClick={prevStep}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#9ca3af',
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                marginBottom: '1rem'
+              }}
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              Back
+            </button>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#535D66', marginBottom: '0.5rem', textAlign: 'center' }}>
               How would you like to join?
             </h3>
@@ -216,20 +255,6 @@ export default function WaitlistForm() {
                   </div>
                 </div>
               </button>
-            </div>
-
-            <div style={{ marginTop: '1.5rem' }}>
-              <button
-                type="button"
-                disabled
-                className="btn-primary"
-                style={{ opacity: 0.6 }}
-              >
-                Join the Waitlist
-              </button>
-              <p style={{ fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center', marginTop: '0.5rem' }}>
-                Select an option above to continue
-              </p>
             </div>
           </div>
         )}
