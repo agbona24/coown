@@ -1,6 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// WhatsApp Group Links
+const WHATSAPP_LINKS = {
+  coowner: 'https://chat.whatsapp.com/KI2OI4OsgnZAxAFZwopMFx',
+  realtor: 'https://chat.whatsapp.com/I6qTqjsYEzAHaAp6Fh8d38',
+};
 
 type UserType = 'realtor' | 'coowner' | null;
 
@@ -51,19 +57,73 @@ export default function WaitlistForm() {
     if (step > 0) setStep(step - 1);
   };
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
-    // Simulate API call (will be replaced with Airtable)
+    // Simulate submission (Airtable integration disabled for now)
     setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
       console.log('Waitlist submission:', formData);
+      setIsSubmitted(true);
+      setIsSubmitting(false);
     }, 1500);
+
+    // TODO: Uncomment below to enable Airtable submission
+    // try {
+    //   const response = await fetch('/api/waitlist', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(formData),
+    //   });
+    //
+    //   const data = await response.json();
+    //
+    //   if (!response.ok) {
+    //     throw new Error(data.error || 'Failed to join waitlist');
+    //   }
+    //
+    //   setIsSubmitted(true);
+    // } catch (err) {
+    //   setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    // } finally {
+    //   setIsSubmitting(false);
+    // }
   };
 
+  const [countdown, setCountdown] = useState(5);
+
+  // Countdown and redirect effect
+  useEffect(() => {
+    if (!isSubmitted) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          // Redirect to WhatsApp group
+          const link = formData.userType === 'realtor'
+            ? WHATSAPP_LINKS.realtor
+            : WHATSAPP_LINKS.coowner;
+          window.open(link, '_blank');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isSubmitted, formData.userType]);
+
   if (isSubmitted) {
+    const whatsappLink = formData.userType === 'realtor'
+      ? WHATSAPP_LINKS.realtor
+      : WHATSAPP_LINKS.coowner;
+
     return (
       <div className="form-card" style={{ animation: 'fadeIn 0.5s ease' }}>
         <div style={{ textAlign: 'center' }}>
@@ -75,14 +135,54 @@ export default function WaitlistForm() {
           <h3 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#535D66', marginBottom: '0.5rem' }}>
             Welcome to COOWN!
           </h3>
-          <p style={{ color: 'rgba(83, 93, 102, 0.7)', marginBottom: '1.5rem' }}>
+          <p style={{ color: 'rgba(83, 93, 102, 0.7)', marginBottom: '1rem' }}>
             {formData.userType === 'realtor'
               ? "We're excited to have you as a partner realtor."
               : "You're one step closer to co-owning premium properties."}
           </p>
-          <p style={{ color: 'rgba(83, 93, 102, 0.7)', fontSize: '0.875rem' }}>
-            We&apos;ll be in touch at <strong>{formData.email}</strong>
-          </p>
+
+          {/* Countdown */}
+          <div style={{
+            background: 'linear-gradient(135deg, #53857A, #456e64)',
+            borderRadius: '1rem',
+            padding: '1.5rem',
+            marginBottom: '1rem'
+          }}>
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+              Joining WhatsApp Community in
+            </p>
+            <div style={{
+              fontSize: '3rem',
+              fontWeight: 700,
+              color: 'white',
+              lineHeight: 1
+            }}>
+              {countdown}
+            </div>
+            <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+              seconds
+            </p>
+          </div>
+
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              color: '#25D366',
+              fontWeight: 500,
+              textDecoration: 'none',
+              fontSize: '0.875rem'
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Join Now
+          </a>
         </div>
       </div>
     );
@@ -364,11 +464,10 @@ export default function WaitlistForm() {
                     style={{ cursor: 'pointer' }}
                   >
                     <option value="">Select your budget</option>
-                    <option value="5-10m">N5M - N10M</option>
-                    <option value="10-25m">N10M - N25M</option>
-                    <option value="25-50m">N25M - N50M</option>
-                    <option value="50-100m">N50M - N100M</option>
-                    <option value="100m+">N100M+</option>
+                    <option value="100k-500k">₦100K - ₦500K</option>
+                    <option value="500k-1m">₦500K - ₦1M</option>
+                    <option value="1m-10m">₦1M - ₦10M</option>
+                    <option value="10m+">Above ₦10M</option>
                   </select>
                 </div>
               ) : (
@@ -411,6 +510,22 @@ export default function WaitlistForm() {
                 </>
               )}
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <div style={{
+                marginTop: '1rem',
+                padding: '0.75rem',
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '0.5rem',
+                color: '#dc2626',
+                fontSize: '0.875rem',
+                textAlign: 'center'
+              }}>
+                {error}
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
               <button
