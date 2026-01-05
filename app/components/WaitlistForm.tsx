@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { sendToGoogleSheets } from '../lib/googleSheets';
 
 // WhatsApp Group Links
 const WHATSAPP_LINKS = {
@@ -64,35 +65,32 @@ export default function WaitlistForm() {
     setIsSubmitting(true);
     setError(null);
 
-    // Simulate submission (Airtable integration disabled for now)
-    setTimeout(() => {
-      console.log('Waitlist submission:', formData);
-      setIsSubmitted(true);
-      setIsSubmitting(false);
-    }, 1500);
+    try {
+      // Validate userType before submission
+      if (!formData.userType) {
+        throw new Error('Please select a user type');
+      }
 
-    // TODO: Uncomment below to enable Airtable submission
-    // try {
-    //   const response = await fetch('/api/waitlist', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(formData),
-    //   });
-    //
-    //   const data = await response.json();
-    //
-    //   if (!response.ok) {
-    //     throw new Error(data.error || 'Failed to join waitlist');
-    //   }
-    //
-    //   setIsSubmitted(true);
-    // } catch (err) {
-    //   setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
-    // } finally {
-    //   setIsSubmitting(false);
-    // }
+      const result = await sendToGoogleSheets({
+        userType: formData.userType,
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        investmentBudget: formData.investmentBudget,
+        agencyName: formData.agencyName,
+        experience: formData.experience,
+      });
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to join waitlist');
+      }
+
+      setIsSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const [countdown, setCountdown] = useState(5);
